@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comms-deployment
+  namespace: spaceborscht
+  labels:
+    app: comms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: comms
+  template:
+    metadata:
+      labels:
+        app: comms
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "3003"
+    spec:
+      containers:
+      - name: comms
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/comms:latest
+        ports:
+          - name: metrics-port
+            containerPort: 3003
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3003"
+        - name: OTEL_SERVICE_NAME
+          value: "spaceborscht-comms"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4318/v1/traces"
+        - name: ERROR_RATE_DEFAULT
+          value: "0.1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: comms-service
+  namespace: spaceborscht
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "3003"
+spec:
+  selector:
+    app: comms
+  ports:
+    - name: metrics-port
+      protocol: TCP
+      port: 3003
+      targetPort: 3003
+  type: ClusterIP

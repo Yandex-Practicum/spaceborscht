@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: control-deployment
+  namespace: spaceborscht
+  labels:
+    app: control
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: control
+  template:
+    metadata:
+      labels:
+        app: control
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "3000"
+    spec:
+      containers:
+      - name: control
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/control:latest
+        ports:
+          - name: metrics-port
+            containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: OTEL_SERVICE_NAME
+          value: "spaceborscht-control"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector:4318/v1/traces"
+        - name: ENGINE_URL
+          value: "http://engine-service:3001"
+        - name: TELEMETRY_URL
+          value: "http://telemetry-service:3002"
+        - name: COMMS_URL
+          value: "http://comms-service:3003"
+        - name: ERROR_RATE_DEFAULT
+          value: "0.1"
+        - name: MISSION_DEFAULT_STEPS
+          value: "20"
+        - name: STEP_INTERVAL_MS
+          value: "1000"
+        - name: TELEMETRY_FREQ
+          value: "3"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-service
+  namespace: spaceborscht
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "3000"
+spec:
+  selector:
+    app: control
+  ports:
+    - name: metrics-port
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
