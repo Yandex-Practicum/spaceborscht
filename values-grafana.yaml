@@ -1,0 +1,39 @@
+env:
+  GF_AUTH_ANONYMOUS_ENABLED: true
+  GF_AUTH_ANONYMOUS_ORG_ROLE: 'Admin'
+  GF_AUTH_DISABLE_LOGIN_FORM: true
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: metrics
+        type: prometheus
+        access: proxy
+        url: http://kube-prometheus-stack-prometheus.practice-3-2.svc.cluster.local:9090
+        basicAuth: false
+        isDefault: true
+        editable: false
+
+      - name: Loki
+        uid: logs
+        type: loki
+        access: proxy
+        url: http://loki.practice-3-1.svc.cluster.local:3100
+        basicAuth: false
+        isDefault: false
+        editable: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "otel"
+
+      - name: Tempo
+        uid: traces
+        type: tempo
+        access: proxy
+        url: http://tempo-query-frontend-discovery.practice-3-4.svc.cluster.local:3200
+        basicAuth: false
+        isDefault: false
+        editable: false
