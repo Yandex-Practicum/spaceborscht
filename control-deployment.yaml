@@ -33,7 +33,7 @@ spec:
         - name: OTEL_SERVICE_NAME
           value: "spaceborscht-control"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://otel-collector:4318/v1/traces"
+          value: "http://tempo-distributor:4318/v1/traces"
         - name: ENGINE_URL
           value: "http://engine-service:3001"
         - name: TELEMETRY_URL

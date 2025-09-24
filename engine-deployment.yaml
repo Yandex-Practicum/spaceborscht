@@ -33,7 +33,7 @@ spec:
         - name: OTEL_SERVICE_NAME
           value: "spaceborscht-engine"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://otel-collector:4318/v1/traces"
+          value: "http://tempo-distributor:4318/v1/traces"
         - name: ERROR_RATE_DEFAULT
           value: "0.1"
         livenessProbe:
