@@ -1,0 +1,19 @@
+ apiVersion: monitoring.coreos.com/v1
+ kind: PodMonitor
+ metadata:
+   name: spaceborscht-podmonitor
+   namespace: spaceborscht
+   labels:
+     release: kube-prometheus-stack
+ spec:
+   namespaceSelector:
+     matchNames: ["spaceborscht"]
+   selector:
+     matchExpressions:
+       - key: app
+         operator: In
+         values: ["control", "engine", "comms", "telemetry"]
+   podMetricsEndpoints:
+     - port: metrics-port
+       path: /metrics
+       interval: 15s

@@ -1,0 +1,27 @@
+ alertmanager:
+   enabled: false
+
+ grafana:
+   enabled: false
+
+ prometheus:
+   prometheusSpec:
+     additionalScrapeConfigs:
+       - job_name: 'blackbox'
+         metrics_path: /probe
+         params:
+           module: [http_2xx]
+         static_configs:
+           - targets:
+              - http://control-service.spaceborscht.svc.cluster.local:3000
+              - http://engine-service.spaceborscht.svc.cluster.local:3001
+              - http://telemetry-service.spaceborscht.svc.cluster.local:3002
+              - http://comms-service.spaceborscht.svc.cluster.local:3003
+              - http://frontend-service.spaceborscht.svc.cluster.local:80
+         relabel_configs:
+           - source_labels: [__address__]
+             target_label: __param_target
+           - source_labels: [__param_target]
+             target_label: instance
+           - target_label: __address__
+             replacement: blackbox-exporter-prometheus-blackbox-exporter.spaceborscht.svc.cluster.local:9115
