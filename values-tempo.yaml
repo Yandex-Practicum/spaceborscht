@@ -1,0 +1,41 @@
+global:
+  clusterDomain: "cluster.local"
+
+gateway:
+  enabled: true
+
+minio:
+  enabled: false
+
+metaMonitoring:
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+    interval: 15s
+    scrapeTimeout: 10s
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      access_key: "root-user"
+      secret_key: "supersecretpassword"
+      bucket: "tempo-traces"
+      endpoint: "loki-minio:9000"
+      insecure: true
+      forcepathstyle: true
+
+traces:
+  otlp:
+    http:
+      enabled: true
+    grpc:
+      enabled: true
+
+distributor:
+  config:
+    log_received_spans:
+      enabled: true
+    log_discarded_spans:
+      enabled: true
