@@ -11,7 +11,7 @@ datasources:
         uid: metrics
         type: prometheus
         access: proxy
-        url: http://kube-prometheus-stack-prometheus.practice-3-2.svc.cluster.local:9090
+        url: http://kube-prometheus-stack-prometheus.spaceborscht.svc.cluster.local:9090
         basicAuth: false
         isDefault: true
         editable: false
@@ -20,7 +20,7 @@ datasources:
         uid: logs
         type: loki
         access: proxy
-        url: http://loki.practice-3-1.svc.cluster.local:3100
+        url: http://loki.spaceborscht.svc.cluster.local:3100
         basicAuth: false
         isDefault: false
         editable: false
@@ -33,7 +33,491 @@ datasources:
         uid: traces
         type: tempo
         access: proxy
-        url: http://tempo-query-frontend-discovery.practice-3-4.svc.cluster.local:3200
+        url: http://tempo-query-frontend-discovery.spaceborscht.svc.cluster.local:3200
         basicAuth: false
         isDefault: false
         editable: false
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: practice
+        orgId: 1
+        folder: "practice"
+        type: file
+        disableDeletion: false
+        allowUiUpdates: false
+        options:
+          path: /var/lib/grafana/dashboards/practice
+      - name: lesson
+        orgId: 1
+        folder: "lesson"
+        type: file
+        disableDeletion: false
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/lesson
+      - name: traces
+        orgId: 1
+        folder: "traces"
+        type: file
+        disableDeletion: false
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/traces
+
+dashboards:
+  practice:
+    loki:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": 1,
+          "links": [],
+          "panels": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "logs"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              },
+              "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+              "id": 1,
+              "options": {
+                "dedupStrategy": "none",
+                "enableInfiniteScrolling": false,
+                "enableLogDetails": true,
+                "prettifyLogMessage": false,
+                "showCommonLabels": false,
+                "showLabels": false,
+                "showTime": false,
+                "sortOrder": "Descending",
+                "wrapLogMessage": false
+              },
+              "pluginVersion": "12.1.1",
+              "targets": [
+                {
+                  "datasource": { "type": "loki", "uid": "logs" },
+                  "direction": "backward",
+                  "editorMode": "builder",
+                  "expr": "{service_name=\"comms\"}",
+                  "maxLines": 100,
+                  "queryType": "range",
+                  "refId": "A"
+                }
+              ],
+              "title": "Comms Log Panel",
+              "type": "logs"
+            }
+          ],
+          "preload": false,
+          "schemaVersion": 41,
+          "tags": [],
+          "templating": { "list": [] },
+          "time": { "from": "now-6h", "to": "now" },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Logs Dashboards",
+          "uid": "f8b991f2-4b6e-4efd-a0ab-0552ccea78a5",
+          "version": 2
+        }
+
+  lesson:
+    dashboard:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": 1,
+          "links": [],
+          "panels": [
+            {
+              "datasource": { "type": "prometheus", "uid": "metrics" },
+              "description": "Amount of available space",
+              "fieldConfig": {
+                "defaults": {
+                  "color": { "mode": "palette-classic" },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": { "type": "linear" },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": { "group": "A", "mode": "none" },
+                    "thresholdsStyle": { "mode": "off" }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 80 }]
+                  },
+                  "unit": "decbytes"
+                },
+                "overrides": [
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": ["/dev/vda15"],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": { "legend": false, "tooltip": false, "viz": true }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+              "id": 1,
+              "options": {
+                "legend": { "calcs": ["min", "max", "mean"], "displayMode": "table", "placement": "right", "showLegend": true },
+                "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" }
+              },
+              "pluginVersion": "12.1.1",
+              "targets": [
+                {
+                  "datasource": { "type": "prometheus", "uid": "metrics" },
+                  "editorMode": "code",
+                  "expr": "node_filesystem_avail_bytes{job=\"node-exporter\", device!~\"rootfs|shm|tmpfs\", instance=~\"$node\"}",
+                  "legendFormat": "{{ device }}",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "FS Space Available",
+              "type": "timeseries"
+            }
+          ],
+          "preload": false,
+          "schemaVersion": 41,
+          "tags": [],
+          "templating": {
+            "list": [
+              {
+                "allowCustomValue": false,
+                "current": { "text": ["10.129.0.11:9100"], "value": ["10.129.0.11:9100"] },
+                "definition": "label_values(node_uname_info,instance)",
+                "label": "Instance",
+                "multi": true,
+                "name": "node",
+                "options": [],
+                "query": {
+                  "qryType": 1,
+                  "query": "label_values(node_uname_info,instance)",
+                  "refId": "PrometheusVariableQueryEditor-VariableQuery"
+                },
+                "refresh": 1,
+                "regex": "",
+                "type": "query"
+              }
+            ]
+          },
+          "time": { "from": "now-6h", "to": "now" },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Metrics",
+          "uid": "0643c493-712e-425e-a8f0-62ccebe520c4",
+          "version": 1
+        }
+  traces:
+    resources:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": 6,
+          "links": [],
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "metrics"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 14,
+                "w": 24,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "pluginVersion": "12.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "metrics"
+                  },
+                  "editorMode": "code",
+                  "expr": "up{pod=~\".*tempo.*\"}",
+                  "instant": false,
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "Tempo Pods Health",
+              "type": "timeseries"
+            }
+          ],
+          "preload": false,
+          "schemaVersion": 41,
+          "tags": [],
+          "templating": {
+            "list": []
+          },
+          "time": {
+            "from": "now-15m",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Tempo Resources",
+          "uid": "789c57e2-0203-4678-8831-5a8b0d0b391c",
+          "version": 2
+        }
+    getByTraceId:
+      json: |
+        {
+          "annotations": {
+            "list": [
+              {
+                "builtIn": 1,
+                "datasource": {
+                  "type": "grafana",
+                  "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+              }
+            ]
+          },
+          "editable": true,
+          "fiscalYearStartMonth": 0,
+          "graphTooltip": 0,
+          "id": 5,
+          "links": [],
+          "panels": [
+            {
+              "datasource": {
+                "type": "tempo",
+                "uid": "traces"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 15,
+                "w": 24,
+                "x": 0,
+                "y": 0
+              },
+              "id": 1,
+              "options": {
+                "spanFilters": {
+                  "criticalPathOnly": false,
+                  "matchesOnly": false,
+                  "serviceNameOperator": "=",
+                  "spanNameOperator": "=",
+                  "tags": [
+                    {
+                      "id": "8c039afd-0bb",
+                      "operator": "="
+                    }
+                  ]
+                }
+              },
+              "pluginVersion": "12.1.1",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "tempo",
+                    "uid": "traces"
+                  },
+                  "limit": 20,
+                  "metricsQueryType": "range",
+                  "query": "$traceId",
+                  "queryType": "traceql",
+                  "refId": "A",
+                  "tableType": "traces"
+                }
+              ],
+              "title": "Search for traces",
+              "type": "traces"
+            }
+          ],
+          "preload": false,
+          "schemaVersion": 41,
+          "tags": [],
+          "templating": {
+            "list": [
+              {
+                "current": {
+                  "text": "3e573a9850f7d861e579d917cd73c6f1",
+                  "value": "3e573a9850f7d861e579d917cd73c6f1"
+                },
+                "label": "Trace ID",
+                "name": "traceId",
+                "options": [],
+                "query": "",
+                "type": "custom"
+              }
+            ]
+          },
+          "time": {
+            "from": "now-6h",
+            "to": "now"
+          },
+          "timepicker": {},
+          "timezone": "browser",
+          "title": "Traces",
+          "uid": "86cd198e-2ffe-454a-91ca-3085369ccb30",
+          "version": 2
+        }
