@@ -32,8 +32,7 @@ spec:
           value: "3003"
         - name: OTEL_SERVICE_NAME
           value: "spaceborscht-comms"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://otel-collector:4318/v1/traces"
+
         - name: SIGNAL_AMPLIFIER
           value: "disabled"
         livenessProbe:

@@ -32,8 +32,7 @@ spec:
           value: "3001"
         - name: OTEL_SERVICE_NAME
           value: "spaceborscht-engine"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://otel-collector:4318/v1/traces"
+
 
         livenessProbe:
           httpGet:

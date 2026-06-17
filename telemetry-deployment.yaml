@@ -32,8 +32,7 @@ spec:
           value: "3002"
         - name: OTEL_SERVICE_NAME
           value: "spaceborscht-telemetry"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://otel-collector:4318/v1/traces"
+
         livenessProbe:
           httpGet:
             path: /health
