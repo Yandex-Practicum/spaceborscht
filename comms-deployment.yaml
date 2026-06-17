@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: comms
-        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/comms:latest
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/comms:v1
         ports:
           - name: metrics-port
             containerPort: 3003
@@ -34,8 +34,8 @@ spec:
           value: "spaceborscht-comms"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://otel-collector:4318/v1/traces"
-        - name: ERROR_RATE_DEFAULT
-          value: "0.1"
+        - name: SIGNAL_AMPLIFIER
+          value: "disabled"
         livenessProbe:
           httpGet:
             path: /health

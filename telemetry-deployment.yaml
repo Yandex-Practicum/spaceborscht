@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: telemetry
-        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/telemetry:latest
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/telemetry:v1
         ports:
           - name: metrics-port
             containerPort: 3002
@@ -34,8 +34,6 @@ spec:
           value: "spaceborscht-telemetry"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://otel-collector:4318/v1/traces"
-        - name: ERROR_RATE_DEFAULT
-          value: "0.1"
         livenessProbe:
           httpGet:
             path: /health

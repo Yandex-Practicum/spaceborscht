@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: control
-        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/control:latest
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/control:v1
         ports:
           - name: metrics-port
             containerPort: 3000
@@ -40,8 +40,7 @@ spec:
           value: "http://telemetry-service:3002"
         - name: COMMS_URL
           value: "http://comms-service:3003"
-        - name: ERROR_RATE_DEFAULT
-          value: "0.1"
+
         - name: MISSION_DEFAULT_STEPS
           value: "20"
         - name: STEP_INTERVAL_MS

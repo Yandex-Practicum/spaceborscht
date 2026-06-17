@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/frontend:latest
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/frontend:v1
         ports:
           - name: metrics-port
             containerPort: 80

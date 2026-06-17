@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: engine
-        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/engine:latest
+        image: cr.yandex/crpppobvo0dedl805s42/spaceborscht/engine:v1
         ports:
           - name: metrics-port
             containerPort: 3001
@@ -34,8 +34,7 @@ spec:
           value: "spaceborscht-engine"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://otel-collector:4318/v1/traces"
-        - name: ERROR_RATE_DEFAULT
-          value: "0.1"
+
         livenessProbe:
           httpGet:
             path: /health
